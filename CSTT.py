@@ -10,9 +10,17 @@ from torch.nn.modules.activation import ReLU
 import torchvision
 import numpy as np
 import math
-from .Sysu_STA import batch_divide, PositionalEncoding
-from .freqtrans import DCTBlock2D_v2
 from torch.utils import checkpoint
+
+def batch_divide(x,seq_num):
+    if seq_num is None:
+        return x
+    seq_num = [0] + np.cumsum(np.array(seq_num)).tolist()
+    _tmp = [
+        x[seq_num[i]:seq_num[i+1]]
+        for i in range(len(seq_num)-1)
+    ]
+    return _tmp
 
 class ShuffledConv1D(nn.Module):
     def __init__(self,in_dim,out_dim,groups,bias=False) -> None:
